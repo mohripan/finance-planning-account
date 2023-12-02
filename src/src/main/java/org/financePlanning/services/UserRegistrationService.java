@@ -1,0 +1,36 @@
+package org.financePlanning.services;
+
+import org.financePlanning.models.User;
+import org.financePlanning.utilities.DatabaseConnectionUtil;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class UserRegistrationService {
+
+    public boolean registerUser(User user) {
+        String hashedPassword = hashPassword(user.getPasswordHash());
+        user.setPasswordHash(hashedPassword);
+
+        try(Connection conn = DatabaseConnectionUtil.getConnection()) {
+            String sql = "INSERT INTO users(username, email, password_hash, created_at) VALUES (?, ?, ?, NOW())";
+            try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, user.getUsername());
+                stmt.setString(2, user.getEmail());
+                stmt.setString(3, user.getPasswordHash());
+
+                int affectedRows = stmt.executeUpdate();
+                return affectedRows > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private String hashPassword(String plainTextPassword) {
+        return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt());
+    }
+}
