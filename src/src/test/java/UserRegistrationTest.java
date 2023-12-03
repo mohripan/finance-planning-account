@@ -8,7 +8,7 @@ public class UserRegistrationTest {
 
     @Test
     public void testSuccessfulRegistration() {
-        User user = new User("username", "password");
+        User user = new User("nonExistingUsername", "password");
         UserRegistrationService registrationService = new UserRegistrationService();
 
         boolean result = registrationService.registerUser(user);
@@ -18,7 +18,7 @@ public class UserRegistrationTest {
 
     @Test
     public void testRegistrationWithExistingUsername() {
-        User user = new User("existingUser", "password");
+        User user = new User("username", "password123");
         UserRegistrationService registrationService = new UserRegistrationService();
 
         boolean result = registrationService.registerUser(user);
